@@ -4,8 +4,11 @@ Flashes Arch Linux ARM onto an SD card / USB disk for a **Raspberry Pi 4**,
 following the [ALARM Raspberry Pi 4 guide](https://archlinuxarm.org/platforms/armv8/broadcom/raspberry-pi-4)
 with its outdated/wrong steps fixed. Four questions ([huh](https://github.com/charmbracelet/huh) forms), the rest is automatic.
 
+Sibling project of [linux-rt-arm](https://github.com/KM-mostoslavski/linux-rt-arm), the
+PREEMPT_RT kernel package it installs.
+
 ```sh
-cd rpi4-flash && go build -o rpi4-flash .
+go build -o rpi4-flash .
 sudo ./rpi4-flash            # interactive
 ```
 

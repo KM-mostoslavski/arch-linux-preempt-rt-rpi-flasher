@@ -1,0 +1,4 @@
+/rpi4-flash
+*.pkg.tar.*
+__pycache__/
+CLAUDE.md

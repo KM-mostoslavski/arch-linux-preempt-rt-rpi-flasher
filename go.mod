@@ -1,4 +1,4 @@
-module github.com/KM-mostoslavski/rpi4-flash
+module github.com/KM-mostoslavski/arch-linux-preempt-rt-rpi-flasher
 
 go 1.27.1
 
