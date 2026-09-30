@@ -10,12 +10,13 @@ import (
 	"strings"
 )
 
-// DECISION (branch decision/kernel-rt-pkg-vs-alarm-latest):
+// The two kernel choices:
 //
 //   "7.2.7"  -> the linux-rt-arm PREEMPT_RT package built from the PKGBUILD
-//               (pkgver 7.2.7). It is not in any repo, so it is taken from a
-//               local .pkg.tar.* file; the closest version is used, with a
-//               warning, when 7.2.7 itself is not there.
+//               (pkgver 7.2.7). It is not in any pacman repo, so the built
+//               .pkg.tar.* file is taken from the linux-rt-arm PKGBUILD
+//               repository's checkout (see searchDirs); the closest version
+//               is used, with a warning, when 7.2.7 itself is not there.
 //   "latest" -> the newest kernel of the Arch Linux ARM repos, through a full
 //               `pacman -Syu` (linux-aarch64 / linux-rpi; no partial upgrade).
 //
@@ -69,15 +70,36 @@ func planKernel(r *runner, cfg config) (*kernelPlan, error) {
 	return &kernelPlan{rtPkg: pkg}, nil
 }
 
+// searchDirs lists where the built linux-rt-arm package is looked for.
+//
+// The package comes out of the linux-rt-arm PKGBUILD repository, a checkout
+// of its own beside this tool's: every directory next to the binary's is
+// searched, at its root and in PKGBUILDs/linux-rt-arm (makepkg leaves the
+// package next to the PKGBUILD). Nothing is built here.
 func searchDirs(cfg config) []string {
 	dirs := []string{}
 	if wd, err := os.Getwd(); err == nil {
 		dirs = append(dirs, wd)
 	}
 	if exe, err := os.Executable(); err == nil {
-		dirs = append(dirs, filepath.Dir(exe), filepath.Dir(filepath.Dir(exe)))
+		dirs = append(dirs, filepath.Dir(exe))
+		dirs = append(dirs, repoDirs(filepath.Dir(filepath.Dir(exe)))...)
 	}
 	return append(dirs, cfg.CacheDir)
+}
+
+// repoDirs returns, for each directory in parent, where a linux-rt-arm
+// checkout there would hold its package.
+func repoDirs(parent string) []string {
+	var dirs []string
+	entries, _ := os.ReadDir(parent)
+	for _, e := range entries {
+		if e.IsDir() {
+			d := filepath.Join(parent, e.Name())
+			dirs = append(dirs, d, filepath.Join(d, "PKGBUILDs", rtPkgName))
+		}
+	}
+	return dirs
 }
 
 // findRTPkg picks linux-rt-arm-7.2.7-* if present, else the newest version.
@@ -98,8 +120,8 @@ func findRTPkg(dirs []string) (string, error) {
 		}
 	}
 	if len(cands) == 0 {
-		return "", fmt.Errorf("no %s-*-aarch64.pkg.tar.* found in %s; build it from the PKGBUILD or pass --rt-pkg",
-			rtPkgName, strings.Join(dirs, ", "))
+		return "", fmt.Errorf("no %s-*-aarch64.pkg.tar.* found in the working directory, next to rpi4-flash, "+
+			"in a %s checkout beside it, or in the cache directory; pass its path with --rt-pkg", rtPkgName, rtPkgName)
 	}
 	sort.Slice(cands, func(i, j int) bool {
 		a, b := cands[i], cands[j]

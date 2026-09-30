@@ -30,7 +30,7 @@ func main() {
 	flag.StringVar(&cfg.Kernel, "kernel", "", kernelRT+" | "+kernelLatest+" (asked when empty)")
 	flag.StringVar(&cfg.Swap, "swap", "", "none | file | partition (asked when empty)")
 	flag.StringVar(&cfg.CacheDir, "cache-dir", "/var/cache/rpi4-flash", "where rootfs tarballs are kept between runs")
-	flag.StringVar(&cfg.RTPkg, "rt-pkg", "", "linux-rt-arm package file to install (default: searched next to the binary and in the working directory)")
+	flag.StringVar(&cfg.RTPkg, "rt-pkg", "", "built linux-rt-arm package file to install (default: searched in the working directory, next to the binary and in the linux-rt-arm checkout beside it)")
 	flag.StringVar(&cfg.LogPath, "log", "", "log file (default: <cache-dir>/rpi4-flash.log)")
 	flag.BoolVar(&yes, "yes", false, "do not ask for the final erase confirmation")
 	flag.BoolVar(&verbose, "verbose", false, "stream command output to the terminal")

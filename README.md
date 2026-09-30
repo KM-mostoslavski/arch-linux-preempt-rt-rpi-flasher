@@ -43,10 +43,13 @@ with status 130; the card is then partially written and must be flashed again.
 6. Pins `/etc/fstab` to filesystem UUIDs and `cmdline.txt` (armv7) to the root PARTUUID.
 7. Swap file (`/swapfile`, 1 GiB) or partition, added to fstab.
 8. Kernel, inside the rootfs via `arch-chroot` + qemu-user: pacman keyring init, then
-   - `7.2.7`: removes the stock kernel and `pacman -U` the local `linux-rt-arm` package
-     (`--rt-pkg`, else searched in the working dir, next to the binary, cache dir;
-     7.2.7 preferred, otherwise the newest with a warning). aarch64 only; armv7 falls back
-     to `latest`.
+   - `7.2.7`: removes the stock kernel and `pacman -U` the built `linux-rt-arm` package.
+     Nothing is compiled here: the package file is the one `makepkg` left in the
+     [linux-rt-arm](https://github.com/KM-mostoslavski/linux-rt-arm) checkout beside this
+     repository (any directory next to this one, at its root or in
+     `PKGBUILDs/linux-rt-arm/`). It is also searched in the working dir, next to the
+     binary and in the cache dir, or given with `--rt-pkg`; 7.2.7 preferred, otherwise the
+     newest with a warning. aarch64 only; armv7 falls back to `latest`.
    - `latest`: `pacman -Syu` (full upgrade: never a partial one).
    Then rebuilds the initramfs without host autodetection (see below) and checks that
    `/boot` contains the whole boot chain.
