@@ -7,6 +7,14 @@ with its outdated/wrong steps fixed. Four questions ([huh](https://github.com/ch
 Sibling project of [linux-rt-arm](https://github.com/KM-mostoslavski/linux-rt-arm), the
 PREEMPT_RT kernel package it installs.
 
+> **WIP — where the RT kernel comes from is temporary.**
+> Today `rpi4-flash` installs a `linux-rt-arm` package file it finds on this machine, in
+> a linux-rt-arm checkout beside this repository. That only works on a PC where the
+> package was already built.
+>
+> **TODO:** download the prebuilt `linux-rt-arm` packages from a web server instead. That
+> server is not set up yet. Once it is, the local lookup goes away.
+
 ```sh
 go build -o rpi4-flash .
 sudo ./rpi4-flash            # interactive
@@ -44,7 +52,8 @@ with status 130; the card is then partially written and must be flashed again.
 7. Swap file (`/swapfile`, 1 GiB) or partition, added to fstab.
 8. Kernel, inside the rootfs via `arch-chroot` + qemu-user: pacman keyring init, then
    - `7.2.7`: removes the stock kernel and `pacman -U` the built `linux-rt-arm` package.
-     Nothing is compiled here: the package file is the one `makepkg` left in the
+     **Temporary (WIP, see the TODO at the top):** until the prebuilt packages can be
+     downloaded from a web server, the package file is the one `makepkg` left in the
      [linux-rt-arm](https://github.com/KM-mostoslavski/linux-rt-arm) checkout beside this
      repository (any directory next to this one, at its root or in
      `PKGBUILDs/linux-rt-arm/`). It is also searched in the working dir, next to the
